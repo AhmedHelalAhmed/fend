@@ -25,7 +25,7 @@ const sectionElements = document.querySelectorAll("section");
  * Start Helper Functions
  *
  */
-function buildTheNav() {
+const buildTheNav = () => {
   const fragmentContainer = document.createDocumentFragment();
   for (sectionElement of sectionElements) {
     let navtext = sectionElement.getAttribute("data-nav");
@@ -40,13 +40,13 @@ function buildTheNav() {
   }
   navElement.appendChild(fragmentContainer);
   navElement.addEventListener("click", scrollToTheTargetSection);
-}
+};
 /**
  * End Helper Functions
  * Begin Main Functions
  *
  */
-function isSectionInViewport(el) {
+const isSectionInViewport = (el) => {
   const SectionBox = el.getBoundingClientRect();
   return (
     SectionBox.top >= 0 &&
@@ -56,11 +56,10 @@ function isSectionInViewport(el) {
     SectionBox.right <=
       (window.innerWidth || document.documentElement.clientWidth)
   );
-}
+};
 // build the nav
 // Add class 'active' to section when near top of viewport
 // Scroll to anchor ID using scrollTO event
-buildTheNav();
 
 /**
  * End Main Functions
@@ -71,7 +70,7 @@ buildTheNav();
 // Build menu
 // Scroll to section on link click
 // Set sections as active
-function scrollToTheTargetSection(e) {
+const scrollToTheTargetSection = (e) => {
   e.preventDefault();
   const sectionId = e.target.getAttribute("data-id");
   if (sectionId) {
@@ -84,14 +83,14 @@ function scrollToTheTargetSection(e) {
       behavior: "smooth",
     });
   }
-}
+};
 
-function removeActiveSection() {
+const removeActiveSection = () => {
   const activeSection = document.querySelector(".active");
   activeSection.classList.remove("active");
-}
+};
 
-function handleScroll() {
+const handleScroll = () => {
   for (sectionElement of sectionElements) {
     if (isSectionInViewport(sectionElement)) {
       const activeNavElement = navElement.querySelector(".active");
@@ -103,5 +102,6 @@ function handleScroll() {
         .parentNode.classList.add("active");
     }
   }
-}
+};
 document.addEventListener("scroll", handleScroll);
+buildTheNav();
