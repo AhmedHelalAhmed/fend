@@ -18,6 +18,7 @@
  *
  */
 const navElement = document.querySelector("#navbar__list");
+const sectionElements = document.querySelectorAll("section");
 
 /**
  * End Global Variables
@@ -26,13 +27,15 @@ const navElement = document.querySelector("#navbar__list");
  */
 function buildTheNav() {
   const fragmentContainer = document.createDocumentFragment();
-  const sectionElements = document.querySelectorAll("section");
   for (sectionElement of sectionElements) {
     let navtext = sectionElement.getAttribute("data-nav");
     let navElement = document.createElement("li");
+    let aNavElement = document.createElement("a");
+
     let navId = sectionElement.getAttribute("id");
-    navElement.textContent = navtext;
-    navElement.setAttribute("data-id", navId);
+    aNavElement.textContent = navtext;
+    aNavElement.setAttribute("data-id", navId);
+    navElement.appendChild(aNavElement);
     fragmentContainer.appendChild(navElement);
   }
   navElement.appendChild(fragmentContainer);
@@ -43,7 +46,17 @@ function buildTheNav() {
  * Begin Main Functions
  *
  */
-
+function isSectionInViewport(el) {
+  const SectionBox = el.getBoundingClientRect();
+  return (
+    SectionBox.top >= 0 &&
+    SectionBox.left >= 0 &&
+    SectionBox.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    SectionBox.right <=
+      (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
 // build the nav
 // Add class 'active' to section when near top of viewport
 // Scroll to anchor ID using scrollTO event
@@ -59,11 +72,13 @@ buildTheNav();
 // Scroll to section on link click
 // Set sections as active
 function scrollToTheTargetSection(e) {
+  e.preventDefault();
   const sectionId = e.target.getAttribute("data-id");
   if (sectionId) {
-    removeActiveSection();
     const targetSectionElement = document.getElementById(sectionId);
     targetSectionElement.classList.add("active");
+    e.target.parentNode.classList.add("active");
+    removeActiveSection();
     window.scrollTo({
       top: targetSectionElement.offsetTop,
       behavior: "smooth",
@@ -75,3 +90,18 @@ function removeActiveSection() {
   const activeSection = document.querySelector(".active");
   activeSection.classList.remove("active");
 }
+
+function handleScroll() {
+  for (sectionElement of sectionElements) {
+    if (isSectionInViewport(sectionElement)) {
+      const activeNavElement = navElement.querySelector(".active");
+      if (activeNavElement) {
+        activeNavElement.classList.remove("active");
+      }
+      navElement
+        .querySelector(`[data-id=${sectionElement.getAttribute("id")}]`)
+        .parentNode.classList.add("active");
+    }
+  }
+}
+document.addEventListener("scroll", handleScroll);
